@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import delay from 'delay';
 import styled, { keyframes } from 'styled-components';
 import data from '../data/data.json';
 import Map from './Map';
@@ -377,18 +378,21 @@ class GraphMap extends Component {
     })
       .then(res => {
         console.log(res.data);
-        this.setState(
-          {
-            messages: [...res.data.messages],
-            cooldown: res.data.cooldown
-          }
-          // () =>
-          //   this.wait(1500 * this.state.cooldown).then(() => this.getStatus())
-        );
+        console.log('this.state.cooldown', this.state.cooldown);
+        console.log('res.data.cooldown', res.data.cooldown);
+        console.log('cooldown times 1000', this.state.cooldown * 1000);
+        this.setState({
+          messages: [...res.data.messages],
+          cooldown: res.data.cooldown
+        });
+        console.log('this.state.cooldown', this.state.cooldown);
       })
+      .then(() => this.wait(1000 * this.state.cooldown))
       .catch(err => {
         console.log('There was an error.');
         console.dir(err);
+        this.setState({ cooldown: err.response.data.cooldown });
+        throw new Error(err.response.data.errors[0]);
       });
   };
 

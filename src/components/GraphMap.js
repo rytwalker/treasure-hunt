@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import delay from 'delay';
 import styled, { keyframes } from 'styled-components';
 import data from '../data/data.json';
 import Map from './Map';

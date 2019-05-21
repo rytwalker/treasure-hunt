@@ -363,36 +363,32 @@ class GraphMap extends Component {
       });
   };
 
-  sellTreasure = name => {
-    axios({
-      method: 'post',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      },
-      data: {
-        name,
-        confirm: 'yes'
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-        console.log('this.state.cooldown', this.state.cooldown);
-        console.log('res.data.cooldown', res.data.cooldown);
-        console.log('cooldown times 1000', this.state.cooldown * 1000);
-        this.setState({
+  sellTreasure = async name => {
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        },
+        data: {
+          name,
+          confirm: 'yes'
+        }
+      });
+      this.setState(
+        {
           messages: [...res.data.messages],
           cooldown: res.data.cooldown
-        });
-        console.log('this.state.cooldown', this.state.cooldown);
-      })
-      .then(() => this.wait(1000 * this.state.cooldown))
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
-        this.setState({ cooldown: err.response.data.cooldown });
-        throw new Error(err.response.data.errors[0]);
-      });
+        },
+        async () => await this.wait(1000 * this.state.cooldown)
+      );
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+      this.setState({ cooldown: err.response.data.cooldown });
+      throw new Error(err.response.data.errors[0]);
+    }
   };
 
   takeTreasure = name => {
@@ -415,9 +411,10 @@ class GraphMap extends Component {
             players: [...res.data.players],
             cooldown: res.data.cooldown
           },
-          () => this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
+          () => this.wait(1000 * res.data.cooldown)
         );
       })
+      .then(() => this.getStatus())
 
       .catch(err => {
         console.log('There was an error.');
@@ -460,12 +457,14 @@ class GraphMap extends Component {
   */
   sellAllTreasure = async () => {
     const { inventory, cooldown } = this.state;
-    for (let treasure of inventory) {
-      await this.wait(1000 * cooldown);
-      await this.sellTreasure(treasure);
-    }
-    await this.wait(1000 * cooldown);
-    this.getStatus();
+    await this.sellTreasure(inventory[0]);
+    // for (let treasure of inventory) {
+    //   // await this.wait(5000);
+    //   // console.log(treasure);
+
+    // }
+    // await this.wait(1000 * cooldown);
+    await this.getStatus();
   };
 
   /* 

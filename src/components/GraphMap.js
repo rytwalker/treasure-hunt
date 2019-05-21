@@ -88,86 +88,82 @@ class GraphMap extends Component {
   };
 
   // API METHODS (The name describes what they do)
-  changeName = () => {
-    axios({
-      method: 'post',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      },
-      data: {
-        name: 'Pirate Ry'
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-        this.setState({ messages: [...res.data.messages] }, () =>
-          this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
-        );
-      })
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
+  changeName = async () => {
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        },
+        data: {
+          name: 'Pirate Ry'
+        }
       });
+      console.log(res.data);
+      this.setState({ messages: [...res.data.messages] }, () =>
+        this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
+      );
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+    }
   };
 
-  dash = (direction, num_rooms, next_room_ids) => {
-    axios({
-      method: 'post',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/dash/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      },
-      data: {
-        direction,
-        num_rooms,
-        next_room_ids
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-        this.setState(
-          {
-            messages: [...res.data.messages],
-            cooldown: res.data.cooldown,
-            room_id: res.data.room_id,
-            description: res.data.description,
-            players: [...res.data.players],
-            items: [...res.data.items]
-          },
-          () => this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
-        );
-      })
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
+  dash = async (direction, num_rooms, next_room_ids) => {
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/dash/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        },
+        data: {
+          direction,
+          num_rooms,
+          next_room_ids
+        }
       });
-  };
-
-  examine = name => {
-    axios({
-      method: 'post',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      },
-      data: {
-        name
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-        this.setState({
-          clickedTitle: res.data.name,
-          clickedDescription: res.data.description,
+      console.log(res.data);
+      this.setState(
+        {
+          messages: [...res.data.messages],
           cooldown: res.data.cooldown,
-          isClicked: true
-        });
-      })
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
+          room_id: res.data.room_id,
+          description: res.data.description,
+          players: [...res.data.players],
+          items: [...res.data.items]
+        },
+        () => this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
+      );
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+    }
+  };
+
+  examine = async name => {
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        },
+        data: {
+          name
+        }
       });
+      this.setState({
+        clickedTitle: res.data.name,
+        clickedDescription: res.data.description,
+        cooldown: res.data.cooldown,
+        isClicked: true
+      });
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+    }
   };
 
   FlyToRooms = async (move, next_room_id = null) => {
@@ -228,67 +224,65 @@ class GraphMap extends Component {
     }
   };
 
-  getLocation = () => {
-    axios({
-      method: 'get',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/init/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-        let graph = this.updateGraph(
-          res.data.room_id,
-          this.parseCoords(res.data.coordinates),
-          res.data.exits
-        );
-        this.setState(prevState => ({
-          room_id: res.data.room_id,
-          coords: this.parseCoords(res.data.coordinates),
-          cooldown: res.status.cooldown,
-          exits: [...res.data.exits],
-          description: res.data.description,
-          title: res.data.title,
-          players: [...res.data.players],
-          items: [...res.data.items],
-          graph
-        }));
-        this.updateVisited();
-      })
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
+  getLocation = async () => {
+    try {
+      const res = await axios({
+        method: 'get',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/init/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        }
       });
+      console.log(res.data);
+      let graph = this.updateGraph(
+        res.data.room_id,
+        this.parseCoords(res.data.coordinates),
+        res.data.exits
+      );
+      this.setState(prevState => ({
+        room_id: res.data.room_id,
+        coords: this.parseCoords(res.data.coordinates),
+        cooldown: res.status.cooldown,
+        exits: [...res.data.exits],
+        description: res.data.description,
+        title: res.data.title,
+        players: [...res.data.players],
+        items: [...res.data.items],
+        graph
+      }));
+      this.updateVisited();
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+    }
   };
 
-  getStatus = () => {
-    axios({
-      method: 'post',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/status/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-
-        this.setState(prevState => ({
-          name: res.data.name,
-          cooldown: res.data.cooldown,
-          encumbrance: res.data.encumbrance,
-          strength: res.data.strength,
-          speed: res.data.speed,
-          gold: res.data.gold,
-          inventory: [...res.data.inventory],
-          status: [...res.data.status],
-          errors: [...res.data.errors]
-        }));
-      })
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
+  getStatus = async () => {
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/status/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        }
       });
+      console.log(res.data);
+
+      this.setState(prevState => ({
+        name: res.data.name,
+        cooldown: res.data.cooldown,
+        encumbrance: res.data.encumbrance,
+        strength: res.data.strength,
+        speed: res.data.speed,
+        gold: res.data.gold,
+        inventory: [...res.data.inventory],
+        status: [...res.data.status],
+        errors: [...res.data.errors]
+      }));
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+    }
   };
 
   moveRooms = async (move, next_room_id = null) => {
@@ -304,7 +298,7 @@ class GraphMap extends Component {
       };
     }
     try {
-      const response = await axios({
+      const res = await axios({
         method: 'post',
         url: `https://lambda-treasure-hunt.herokuapp.com/api/adv/move/`,
         headers: {
@@ -317,50 +311,49 @@ class GraphMap extends Component {
 
       //   Update graph
       let graph = this.updateGraph(
-        response.data.room_id,
-        this.parseCoords(response.data.coordinates),
-        response.data.exits,
+        res.data.room_id,
+        this.parseCoords(res.data.coordinates),
+        res.data.exits,
         previous_room_id,
         move
       );
 
       this.setState({
-        room_id: response.data.room_id,
-        coords: this.parseCoords(response.data.coordinates),
-        exits: [...response.data.exits],
-        cooldown: response.data.cooldown,
-        messages: [...response.data.messages],
-        description: response.data.description,
-        title: response.data.title,
-        players: [...response.data.players],
-        items: [...response.data.items],
+        room_id: res.data.room_id,
+        coords: this.parseCoords(res.data.coordinates),
+        exits: [...res.data.exits],
+        cooldown: res.data.cooldown,
+        messages: [...res.data.messages],
+        description: res.data.description,
+        title: res.data.title,
+        players: [...res.data.players],
+        items: [...res.data.items],
         graph
       });
-      console.log(response.data);
+      console.log(res.data);
     } catch (error) {
       console.log('Something went wrong moving...');
       console.dir(error);
     }
   };
 
-  prayToShrine = () => {
-    axios({
-      method: 'post',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-        this.setState({ messages: [...res.data.messages] }, () =>
-          this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
-        );
-      })
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
+  prayToShrine = async () => {
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        }
       });
+      console.log(res.data);
+      this.setState({ messages: [...res.data.messages] }, () =>
+        this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
+      );
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+    }
   };
 
   sellTreasure = async name => {
@@ -391,37 +384,34 @@ class GraphMap extends Component {
     }
   };
 
-  takeTreasure = name => {
-    axios({
-      method: 'post',
-      url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/take/',
-      headers: {
-        Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
-      },
-      data: {
-        name
-      }
-    })
-      .then(res => {
-        console.log(res.data);
-        this.setState(
-          {
-            messages: [...res.data.messages],
-            items: [...res.data.items],
-            players: [...res.data.players],
-            cooldown: res.data.cooldown
-          },
-          () => this.wait(1000 * res.data.cooldown)
-        );
-      })
-      .then(() => this.getStatus())
-
-      .catch(err => {
-        console.log('There was an error.');
-        console.dir(err);
-        this.setState({ cooldown: err.response.data.cooldown });
-        throw err;
+  takeTreasure = async name => {
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/take/',
+        headers: {
+          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+        },
+        data: {
+          name
+        }
       });
+      console.log(res.data);
+      this.setState(
+        {
+          messages: [...res.data.messages],
+          items: [...res.data.items],
+          players: [...res.data.players],
+          cooldown: res.data.cooldown
+        },
+        () => this.wait(1000 * res.data.cooldown)
+      );
+    } catch (err) {
+      console.log('There was an error.');
+      console.dir(err);
+      this.setState({ cooldown: err.response.data.cooldown });
+      throw err;
+    }
   };
 
   // AUTOMATED METHODS

@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import ProgressBar from './ProgressBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDollarSign } from '@fortawesome/free-solid-svg-icons';
+import { PlayerLoader, RoomLoader } from './Loaders';
 
 /*
 This component displays most of the information retrieved from the API.
@@ -30,96 +31,108 @@ const Sidebar = ({
   return (
     <StyledSidebar>
       <div className="room">
-        <h2 className="room-id">
-          Room {room_id}{' '}
-          <span className="coords">{`(${coords.x}, ${coords.y})`}</span>
-        </h2>
+        {room_id ? (
+          <>
+            <h2 className="room-id">
+              Room {room_id}{' '}
+              <span className="coords">{`(${coords.x}, ${coords.y})`}</span>
+            </h2>
 
-        <div className="room-info info">
-          <h3>{isClicked ? clickedTitle : title}</h3>
-          <p>{isClicked ? clickedDescription : description}</p>
-          <p onClick={() => handleClickable()} className="back-button">
-            {isClicked ? 'back' : null}
-          </p>
-        </div>
-        <div className="info">
-          <h3>Items</h3>
-          {!items.length ? (
-            <p>There are no items in this room.</p>
-          ) : (
-            items.map(item => (
-              <span
-                className="room-clickable"
-                onClick={() => examine(item)}
-                key={item + Math.random()}
-              >
-                {item}{' '}
-              </span>
-            ))
-          )}
-        </div>
-        <div className="info">
-          <h3>Players</h3>
-          {!players.length ? (
-            <p>There are no players in this room.</p>
-          ) : (
-            players.map(player => (
-              <span
-                className="room-clickable"
-                onClick={() => examine(player)}
-                key={player}
-              >
-                {player}{' '}
-              </span>
-            ))
-          )}
-        </div>
+            <div className="room-info info">
+              <h3>{isClicked ? clickedTitle : title}</h3>
+              <p>{isClicked ? clickedDescription : description}</p>
+              <p onClick={() => handleClickable()} className="back-button">
+                {isClicked ? 'back' : null}
+              </p>
+            </div>
+            <div className="info">
+              <h3>Items</h3>
+              {!items.length ? (
+                <p>There are no items in this room.</p>
+              ) : (
+                items.map(item => (
+                  <span
+                    className="room-clickable"
+                    onClick={() => examine(item)}
+                    key={item + Math.random()}
+                  >
+                    {item}{' '}
+                  </span>
+                ))
+              )}
+            </div>
+            <div className="info">
+              <h3>Players</h3>
+              {!players.length ? (
+                <p>There are no players in this room.</p>
+              ) : (
+                players.map(player => (
+                  <span
+                    className="room-clickable"
+                    onClick={() => examine(player)}
+                    key={player}
+                  >
+                    {player}{' '}
+                  </span>
+                ))
+              )}
+            </div>
+          </>
+        ) : (
+          <RoomLoader />
+        )}
       </div>
       <div className="player">
-        <div className="player-id">
-          <h2>{name}</h2>
-          <div className="gold-info">
-            <FontAwesomeIcon icon={faDollarSign} /> <span>{gold}</span>
-          </div>
-        </div>
-        <ProgressBar sidebar />
-        <div className="player-stats">
-          <ul>
-            <li>
-              Encumbrance: <span>{encumbrance}</span>
-            </li>
-            <li>
-              Strength: <span>{strength}</span>
-            </li>
-            <li>
-              Speed: <span>{speed}</span>
-            </li>
-            <li>
-              <input type="text" className="secret-input" />
-              <button>+</button>
-            </li>
-          </ul>
-          <ul>
-            <li className="inventory">
-              Inventory:{' '}
-              <span>
-                {!inventory.length ? (
-                  <p>Empty.</p>
-                ) : (
-                  inventory.map(item => (
-                    <span
-                      className="inventory-item"
-                      onClick={() => examine(item)}
-                      key={item + Math.random()}
-                    >
-                      {item}{' '}
-                    </span>
-                  ))
-                )}
-              </span>
-            </li>
-          </ul>
-        </div>
+        {name.length ? (
+          <>
+            <div className="player-id">
+              <h2>{name}</h2>
+              <div className="gold-info">
+                <FontAwesomeIcon icon={faDollarSign} /> <span>{gold}</span>
+              </div>
+            </div>
+            <ProgressBar sidebar />
+            <div className="player-stats">
+              <ul>
+                <li>
+                  Encumbrance: <span>{encumbrance}</span>
+                </li>
+                <li>
+                  Strength: <span>{strength}</span>
+                </li>
+                <li>
+                  Speed: <span>{speed}</span>
+                </li>
+                <li>
+                  <input type="text" className="secret-input" />
+                  <button>+</button>
+                </li>
+              </ul>
+              <ul>
+                <li className="inventory">
+                  Inventory:{' '}
+                  <span>
+                    {!inventory.length ? (
+                      <p>Empty.</p>
+                    ) : (
+                      inventory.map(item => (
+                        <span
+                          className="inventory-item"
+                          onClick={() => examine(item)}
+                          key={item + Math.random()}
+                        >
+                          {item}{' '}
+                        </span>
+                      ))
+                    )}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </>
+        ) : (
+          <PlayerLoader />
+        )}
       </div>
     </StyledSidebar>
   );

@@ -34,10 +34,10 @@ class GraphMap extends Component {
     inverse: { n: 's', s: 'n', w: 'e', e: 'w' },
     loaded: false,
     messages: [],
-    name: 'Ryan',
+    name: '',
     players: [],
     progress: 0,
-    room_id: 0,
+    room_id: null,
     speed: null,
     strength: null,
     title: '',
@@ -739,7 +739,6 @@ class GraphMap extends Component {
       console.log('path');
       for (let direction of path) {
         for (let d in direction) {
-          // await this.wait(1000 * this.state.cooldown);
           await this.flyToRooms(d, direction[d]);
         }
       }

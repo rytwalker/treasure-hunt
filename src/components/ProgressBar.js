@@ -14,13 +14,6 @@ const ProgressBar = ({ progress, sidebar }) => {
           className="progress-bar-fill"
         />
       </div>
-      {/* <div className="progress-bar-text">
-      {generating && (
-        <>
-          <span>GENERATING...</span> <span>{progress}%</span>
-        </>
-      )}
-    </div> */}
     </StyledProgressBar>
   );
 };

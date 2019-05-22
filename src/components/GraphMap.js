@@ -47,14 +47,12 @@ class GraphMap extends Component {
   // LIFE CYCLE METHODS
 
   componentDidMount() {
-    if (localStorage.hasOwnProperty('graph')) {
-      let value = JSON.parse(localStorage.getItem('graph'));
-      this.setState({ graph: value, graphLoaded: true });
-    } else {
+    if (!localStorage.hasOwnProperty('graph')) {
       localStorage.setItem('graph', JSON.stringify(data));
-      let value = JSON.parse(localStorage.getItem('graph'));
-      this.setState({ graph: value, graphLoaded: true });
     }
+    let value = JSON.parse(localStorage.getItem('graph'));
+    this.setState({ graph: value, graphLoaded: true });
+
     this.init();
   }
 
@@ -63,7 +61,6 @@ class GraphMap extends Component {
       this.mapLinks();
       this.mapCoords();
       this.updateProgress();
-      console.log(this.state.progress);
       setTimeout(() => this.setState({ loaded: true }), 3000);
     }
   }
@@ -82,8 +79,9 @@ class GraphMap extends Component {
 
   // inits player location and status
   init = async () => {
+    const { cooldown } = this.state;
     await this.getLocation();
-    await this.wait(1000 * this.state.cooldown);
+    await this.wait(1000 * cooldown);
     await this.getStatus();
   };
 
@@ -166,7 +164,7 @@ class GraphMap extends Component {
     }
   };
 
-  FlyToRooms = async (move, next_room_id = null) => {
+  flyToRooms = async (move, next_room_id = null) => {
     let data;
     if (next_room_id !== null) {
       data = {
@@ -179,7 +177,7 @@ class GraphMap extends Component {
       };
     }
     try {
-      const response = await axios({
+      const res = await axios({
         method: 'post',
         url: `https://lambda-treasure-hunt.herokuapp.com/api/adv/fly/`,
         headers: {
@@ -192,26 +190,27 @@ class GraphMap extends Component {
 
       //   Update graph
       let graph = this.updateGraph(
-        response.data.room_id,
-        this.parseCoords(response.data.coordinates),
-        response.data.exits,
+        res.data.room_id,
+        this.parseCoords(res.data.coordinates),
+        res.data.exits,
         previous_room_id,
         move
       );
 
       this.setState({
-        room_id: response.data.room_id,
-        coords: this.parseCoords(response.data.coordinates),
-        exits: [...response.data.exits],
-        cooldown: response.data.cooldown,
-        messages: [...response.data.messages],
-        description: response.data.description,
-        title: response.data.title,
-        players: [...response.data.players],
-        items: [...response.data.items],
+        room_id: res.data.room_id,
+        coords: this.parseCoords(res.data.coordinates),
+        exits: [...res.data.exits],
+        cooldown: res.data.cooldown,
+        messages: [...res.data.messages],
+        description: res.data.description,
+        title: res.data.title,
+        players: [...res.data.players],
+        items: [...res.data.items],
         graph
       });
-      console.log(response.data);
+      console.log(res.data);
+      await this.wait(1000 * res.data.cooldown);
     } catch (error) {
       console.log('Something went wrong moving...');
       console.dir(error);
@@ -242,7 +241,7 @@ class GraphMap extends Component {
       this.setState(prevState => ({
         room_id: res.data.room_id,
         coords: this.parseCoords(res.data.coordinates),
-        cooldown: res.status.cooldown,
+        cooldown: res.data.cooldown,
         exits: [...res.data.exits],
         description: res.data.description,
         title: res.data.title,
@@ -254,6 +253,7 @@ class GraphMap extends Component {
     } catch (err) {
       console.log('There was an error.');
       console.dir(err);
+      this.setState({ cooldown: err.response.data.cooldown });
     }
   };
 
@@ -369,13 +369,12 @@ class GraphMap extends Component {
           confirm: 'yes'
         }
       });
-      this.setState(
-        {
-          messages: [...res.data.messages],
-          cooldown: res.data.cooldown
-        },
-        async () => await this.wait(1000 * this.state.cooldown)
-      );
+      console.log(res);
+      this.setState({
+        messages: [...res.data.messages],
+        cooldown: res.data.cooldown
+      });
+      await this.wait(1000 * res.data.cooldown);
     } catch (err) {
       console.log('There was an error.');
       console.dir(err);
@@ -397,15 +396,13 @@ class GraphMap extends Component {
         }
       });
       console.log(res.data);
-      this.setState(
-        {
-          messages: [...res.data.messages],
-          items: [...res.data.items],
-          players: [...res.data.players],
-          cooldown: res.data.cooldown
-        },
-        () => this.wait(1000 * res.data.cooldown)
-      );
+      this.setState({
+        messages: [...res.data.messages],
+        items: [...res.data.items],
+        players: [...res.data.players],
+        cooldown: res.data.cooldown
+      });
+      await this.wait(1000 * res.data.cooldown);
     } catch (err) {
       console.log('There was an error.');
       console.dir(err);
@@ -433,8 +430,8 @@ class GraphMap extends Component {
       } else if (items.length) {
         this.takeAllTreasures().then(() => this.exploreMap());
       } else {
-        await this.wait(1000 * cooldown);
-        this.FlyToRooms(exits[random], nextRoom).then(() => {
+        // await this.wait(1000 * cooldown);
+        this.flyToRooms(exits[random], nextRoom).then(() => {
           console.log(cooldown);
           this.exploreMap();
         });
@@ -446,14 +443,10 @@ class GraphMap extends Component {
     This automates selling multiple treasures to the store.
   */
   sellAllTreasure = async () => {
-    const { inventory, cooldown } = this.state;
-    await this.sellTreasure(inventory[0]);
-    // for (let treasure of inventory) {
-    //   // await this.wait(5000);
-    //   // console.log(treasure);
-
-    // }
-    // await this.wait(1000 * cooldown);
+    const { inventory } = this.state;
+    for (let treasure of inventory) {
+      await this.sellTreasure(treasure);
+    }
     await this.getStatus();
   };
 
@@ -461,10 +454,11 @@ class GraphMap extends Component {
     This actually only takes one treasure, getting multiple from a room is in the explore logic. Will update.
   */
   takeAllTreasures = async () => {
-    const { items, cooldown } = this.state;
-    await this.wait(1000 * cooldown);
-    await this.takeTreasure(items[0]);
-    await this.wait(1000 * cooldown);
+    const { items } = this.state;
+    for (let treasure of items) {
+      await this.takeTreasure(treasure);
+    }
+    await this.getStatus();
   };
 
   /* 
@@ -479,8 +473,8 @@ class GraphMap extends Component {
       for (let direction of path) {
         console.log(direction);
         for (let d in direction) {
-          await this.wait(1000 * this.state.cooldown);
-          await this.FlyToRooms(d, direction[d]);
+          // await this.wait(1000 * this.state.cooldown);
+          await this.flyToRooms(d, direction[d]);
         }
       }
     }
@@ -705,7 +699,7 @@ class GraphMap extends Component {
     const { graph, room_id } = this.state;
 
     if (graph[room_id][1][move] || graph[room_id][1][move] === 0) {
-      this.FlyToRooms(move, graph[room_id][1][move]);
+      this.flyToRooms(move, graph[room_id][1][move]);
     } else {
       this.setState({ messages: ["You can't go that way."] });
     }
@@ -745,8 +739,8 @@ class GraphMap extends Component {
       console.log('path');
       for (let direction of path) {
         for (let d in direction) {
-          await this.wait(1000 * this.state.cooldown);
-          await this.FlyToRooms(d, direction[d]);
+          // await this.wait(1000 * this.state.cooldown);
+          await this.flyToRooms(d, direction[d]);
         }
       }
     }

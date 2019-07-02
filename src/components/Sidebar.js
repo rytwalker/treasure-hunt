@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import ProgressBar from './ProgressBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDollarSign } from '@fortawesome/free-solid-svg-icons';
-import { PlayerLoader, RoomLoader } from './Loaders';
+import { PlayerLoader } from './Loaders';
 
 /*
 This component displays most of the information retrieved from the API.
@@ -77,7 +77,6 @@ const Sidebar = ({
             )}
           </div>
         </>
-        )}
       </div>
       <div className="player">
         {name.length ? (

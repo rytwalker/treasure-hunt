@@ -31,55 +31,52 @@ const Sidebar = ({
   return (
     <StyledSidebar>
       <div className="room">
-        {room_id ? (
-          <>
-            <h2 className="room-id">
-              Room {room_id}{' '}
-              <span className="coords">{`(${coords.x}, ${coords.y})`}</span>
-            </h2>
+        <>
+          <h2 className="room-id">
+            Room {room_id}{' '}
+            <span className="coords">{`(${coords.x}, ${coords.y})`}</span>
+          </h2>
 
-            <div className="room-info info">
-              <h3>{isClicked ? clickedTitle : title}</h3>
-              <p>{isClicked ? clickedDescription : description}</p>
-              <p onClick={() => handleClickable()} className="back-button">
-                {isClicked ? 'back' : null}
-              </p>
-            </div>
-            <div className="info">
-              <h3>Items</h3>
-              {!items.length ? (
-                <p>There are no items in this room.</p>
-              ) : (
-                items.map(item => (
-                  <span
-                    className="room-clickable"
-                    onClick={() => examine(item)}
-                    key={item + Math.random()}
-                  >
-                    {item}{' '}
-                  </span>
-                ))
-              )}
-            </div>
-            <div className="info">
-              <h3>Players</h3>
-              {!players.length ? (
-                <p>There are no players in this room.</p>
-              ) : (
-                players.map(player => (
-                  <span
-                    className="room-clickable"
-                    onClick={() => examine(player)}
-                    key={player}
-                  >
-                    {player}{' '}
-                  </span>
-                ))
-              )}
-            </div>
-          </>
-        ) : (
-          <RoomLoader />
+          <div className="room-info info">
+            <h3>{isClicked ? clickedTitle : title}</h3>
+            <p>{isClicked ? clickedDescription : description}</p>
+            <p onClick={() => handleClickable()} className="back-button">
+              {isClicked ? 'back' : null}
+            </p>
+          </div>
+          <div className="info">
+            <h3>Items</h3>
+            {!items.length ? (
+              <p>There are no items in this room.</p>
+            ) : (
+              items.map(item => (
+                <span
+                  className="room-clickable"
+                  onClick={() => examine(item)}
+                  key={item + Math.random()}
+                >
+                  {item}{' '}
+                </span>
+              ))
+            )}
+          </div>
+          <div className="info">
+            <h3>Players</h3>
+            {!players.length ? (
+              <p>There are no players in this room.</p>
+            ) : (
+              players.map(player => (
+                <span
+                  className="room-clickable"
+                  onClick={() => examine(player)}
+                  key={player}
+                >
+                  {player}{' '}
+                </span>
+              ))
+            )}
+          </div>
+        </>
         )}
       </div>
       <div className="player">

@@ -2,6 +2,7 @@ import React from 'react';
 import logo from '../img/logo.svg';
 import ProgressBar from './ProgressBar';
 
+
 const Loading = ({ progress }) => {
   return (
     <div

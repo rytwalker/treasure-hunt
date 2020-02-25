@@ -31,11 +31,19 @@ export const GraphProvider = ({ children }) => {
     });
   }
 
+  function updateGraph(graph) {
+    dispatch({
+      type: "UPDATE_GRAPH",
+      payload: graph
+    });
+  }
+
   return (
     <GraphContext.Provider
       value={{
         graph: state.graph,
-        loadGraph
+        loadGraph,
+        updateGraph
       }}
     >
       {children}

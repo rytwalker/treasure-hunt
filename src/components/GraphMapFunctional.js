@@ -6,16 +6,16 @@ import PirateContext, { GraphContext, RoomContext } from "../context";
 import { useRoom } from "../hooks";
 import data from "../data/data.json";
 
-function updateRoomLocation() {}
+function graphUpdater({}) {}
 
 const GraphMapFunctional = () => {
-  // const { graph, loadGraph } = useContext(GraphContext);
+  const { graph, loadGraph, updateGraph } = useContext(GraphContext);
   // const { room, updateRoom } = useContext(RoomContext);
-  const { room } = useRoom();
+  const { room, updateRoom } = useRoom();
 
   // async function init() {
   //   const { cooldown } = graph;
-  //   await this.getLocation();
+  //   await this.getLocation(updateRoom);
   //   await this.wait(1000 * cooldown);
   //   await this.getStatus();
   // }

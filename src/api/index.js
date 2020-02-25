@@ -6,16 +6,12 @@ export const getLocation = async (updateGraph, updateRoom) => {
     const res = await useApi("get", "init");
     console.log(res.data);
     // UPDATE GRAPH
-    let graph = updateGraph(
-      res.data.room_id,
-      parseCoords(res.data.coordinates),
-      res.data.exits,
-      (cooldown: res.data.cooldown)
-    );
+    const coords = parseCoords(res.data.coordinates);
+    updateGraph(res.data.room_id, coords, res.data.exits, res.data.cooldown);
     // UPDATE ROOM LOCATION
     updateRoom({
       room_id: res.data.room_id,
-      coords: parseCoords(res.data.coordinates),
+      coords,
       exits: [...res.data.exits],
       description: res.data.description,
       title: res.data.title,

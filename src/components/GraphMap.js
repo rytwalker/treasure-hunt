@@ -1,27 +1,27 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import styled, { keyframes } from 'styled-components';
-import data from '../data/data.json';
-import Map from './Map';
-import Loading from './Loading';
-import Sidebar from './Sidebar';
-import Bottombar from './Bottombar.js';
+import React, { Component } from "react";
+import axios from "axios";
+import styled, { keyframes } from "styled-components";
+import data from "../data/data.json";
+import Map from "./Map";
+import Loading from "./Loading";
+import Sidebar from "./Sidebar";
+import Bottombar from "./Bottombar.js";
 
 /*
-This is where all the logic is stored for the App. 
+This is where all the logic is stored for the App.
 */
 
 class GraphMap extends Component {
   state = {
     allCoords: [],
     allLinks: [],
-    clickedDescription: '',
-    clickedTitle: '',
+    clickedDescription: "",
+    clickedTitle: "",
     coords: { x: 50, y: 60 },
     cooldown: 2,
-    description: '',
+    description: "",
     encumbrance: null,
-    error: '',
+    error: "",
     exits: [],
     items: [],
     isClicked: false,
@@ -31,26 +31,26 @@ class GraphMap extends Component {
     graph: {},
     graphLoaded: false,
     inventory: [],
-    inverse: { n: 's', s: 'n', w: 'e', e: 'w' },
+    inverse: { n: "s", s: "n", w: "e", e: "w" },
     loaded: false,
     messages: [],
-    name: '',
+    name: "",
     players: [],
     progress: 0,
     room_id: null,
     speed: null,
     strength: null,
-    title: '',
+    title: "",
     visited: new Set()
   };
 
   // LIFE CYCLE METHODS
 
   componentDidMount() {
-    if (!localStorage.hasOwnProperty('graph')) {
-      localStorage.setItem('graph', JSON.stringify(data));
+    if (!localStorage.hasOwnProperty("graph")) {
+      localStorage.setItem("graph", JSON.stringify(data));
     }
-    let value = JSON.parse(localStorage.getItem('graph'));
+    let value = JSON.parse(localStorage.getItem("graph"));
     this.setState({ graph: value, graphLoaded: true });
 
     this.init();
@@ -89,13 +89,13 @@ class GraphMap extends Component {
   changeName = async () => {
     try {
       const res = await axios({
-        method: 'post',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/',
+        method: "post",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         },
         data: {
-          name: 'Pirate Ry'
+          name: "Pirate Ry"
         }
       });
       console.log(res.data);
@@ -103,7 +103,7 @@ class GraphMap extends Component {
         this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
       );
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
     }
   };
@@ -111,10 +111,10 @@ class GraphMap extends Component {
   dash = async (direction, num_rooms, next_room_ids) => {
     try {
       const res = await axios({
-        method: 'post',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/dash/',
+        method: "post",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/dash/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         },
         data: {
           direction,
@@ -135,7 +135,7 @@ class GraphMap extends Component {
         () => this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
       );
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
     }
   };
@@ -143,10 +143,10 @@ class GraphMap extends Component {
   examine = async name => {
     try {
       const res = await axios({
-        method: 'post',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/',
+        method: "post",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         },
         data: {
           name
@@ -159,7 +159,7 @@ class GraphMap extends Component {
         isClicked: true
       });
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
     }
   };
@@ -178,10 +178,10 @@ class GraphMap extends Component {
     }
     try {
       const res = await axios({
-        method: 'post',
+        method: "post",
         url: `https://lambda-treasure-hunt.herokuapp.com/api/adv/fly/`,
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         },
         data
       });
@@ -212,7 +212,7 @@ class GraphMap extends Component {
       console.log(res.data);
       await this.wait(1000 * res.data.cooldown);
     } catch (error) {
-      console.log('Something went wrong moving...');
+      console.log("Something went wrong moving...");
       console.dir(error);
       this.setState({
         cooldown: error.response.data.cooldown,
@@ -226,10 +226,10 @@ class GraphMap extends Component {
   getLocation = async () => {
     try {
       const res = await axios({
-        method: 'get',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/init/',
+        method: "get",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/init/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         }
       });
       console.log(res.data);
@@ -251,7 +251,7 @@ class GraphMap extends Component {
       }));
       this.updateVisited();
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
       this.setState({ cooldown: err.response.data.cooldown });
     }
@@ -260,10 +260,10 @@ class GraphMap extends Component {
   getStatus = async () => {
     try {
       const res = await axios({
-        method: 'post',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/status/',
+        method: "post",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/status/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         }
       });
       console.log(res.data);
@@ -280,7 +280,7 @@ class GraphMap extends Component {
         errors: [...res.data.errors]
       }));
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
     }
   };
@@ -299,10 +299,10 @@ class GraphMap extends Component {
     }
     try {
       const res = await axios({
-        method: 'post',
+        method: "post",
         url: `https://lambda-treasure-hunt.herokuapp.com/api/adv/move/`,
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         },
         data
       });
@@ -332,7 +332,7 @@ class GraphMap extends Component {
       });
       console.log(res.data);
     } catch (error) {
-      console.log('Something went wrong moving...');
+      console.log("Something went wrong moving...");
       console.dir(error);
     }
   };
@@ -340,10 +340,10 @@ class GraphMap extends Component {
   prayToShrine = async () => {
     try {
       const res = await axios({
-        method: 'post',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/',
+        method: "post",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         }
       });
       console.log(res.data);
@@ -351,7 +351,7 @@ class GraphMap extends Component {
         this.wait(1000 * res.data.cooldown).then(() => this.getStatus())
       );
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
     }
   };
@@ -359,14 +359,14 @@ class GraphMap extends Component {
   sellTreasure = async name => {
     try {
       const res = await axios({
-        method: 'post',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/',
+        method: "post",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         },
         data: {
           name,
-          confirm: 'yes'
+          confirm: "yes"
         }
       });
       console.log(res);
@@ -376,7 +376,7 @@ class GraphMap extends Component {
       });
       await this.wait(1000 * res.data.cooldown);
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
       this.setState({ cooldown: err.response.data.cooldown });
       throw new Error(err.response.data.errors[0]);
@@ -386,10 +386,10 @@ class GraphMap extends Component {
   takeTreasure = async name => {
     try {
       const res = await axios({
-        method: 'post',
-        url: 'https://lambda-treasure-hunt.herokuapp.com/api/adv/take/',
+        method: "post",
+        url: "https://lambda-treasure-hunt.herokuapp.com/api/adv/take/",
         headers: {
-          Authorization: 'Token 895925acf149cba29f6a4c23d85ec0e47d614cdb'
+          Authorization: "Token 895925acf149cba29f6a4c23d85ec0e47d614cdb"
         },
         data: {
           name
@@ -404,7 +404,7 @@ class GraphMap extends Component {
       });
       await this.wait(1000 * res.data.cooldown);
     } catch (err) {
-      console.log('There was an error.');
+      console.log("There was an error.");
       console.dir(err);
       this.setState({ cooldown: err.response.data.cooldown });
       throw err;
@@ -413,7 +413,7 @@ class GraphMap extends Component {
 
   // AUTOMATED METHODS
 
-  /* 
+  /*
     This my looping function. It searches for treasure and picks it up when it finds it. When encumbrance gets too high, it returns to the shop to sell items, then returns to finding treasure.
   */
   exploreMap = async () => {
@@ -439,7 +439,7 @@ class GraphMap extends Component {
     }
   };
 
-  /* 
+  /*
     This automates selling multiple treasures to the store.
   */
   sellAllTreasure = async () => {
@@ -450,7 +450,7 @@ class GraphMap extends Component {
     await this.getStatus();
   };
 
-  /* 
+  /*
     This actually only takes one treasure, getting multiple from a room is in the explore logic. Will update.
   */
   takeAllTreasures = async () => {
@@ -461,13 +461,13 @@ class GraphMap extends Component {
     await this.getStatus();
   };
 
-  /* 
+  /*
     Finds the shortest path to the shop and then moves there.
   */
   travelToShop = async () => {
     const path = this.findShortestPath(this.state.room_id, 1);
     console.log(path);
-    if (typeof path === 'string') {
+    if (typeof path === "string") {
       console.log(path);
     } else {
       for (let direction of path) {
@@ -480,7 +480,7 @@ class GraphMap extends Component {
     }
   };
 
-  /* 
+  /*
     This was my traversal logic to populate the graph. I want to insert part of this back into my Explore method to account for new connections. On the to-do list.
   */
   traverseMap = () => {
@@ -492,7 +492,7 @@ class GraphMap extends Component {
       this.moveRooms(move);
     } else {
       let path = this.findShortestPath();
-      if (typeof path === 'string') {
+      if (typeof path === "string") {
         console.log(path);
       } else {
         for (let direction of path) {
@@ -512,17 +512,17 @@ class GraphMap extends Component {
       this.updateVisited();
       count = 1;
     } else {
-      console.log('Traversal Complete');
+      console.log("Traversal Complete");
       this.setState({ generating: false });
     }
   };
 
   // HELPER MATHODS
 
-  /* 
+  /*
     Breadth First Search algorithm to find the shortest path.
   */
-  findShortestPath = (start = this.state.room_id, target = '?') => {
+  findShortestPath = (start = this.state.room_id, target = "?") => {
     let { graph } = this.state;
     let queue = [];
     let visited = new Set();
@@ -537,12 +537,12 @@ class GraphMap extends Component {
 
       for (let exit in last_room) {
         if (last_room[exit] === target) {
-          if (target === '?') {
+          if (target === "?") {
             dequeued.pop();
           }
           dequeued.forEach(item => {
             for (let key in item) {
-              graph[item[key]][0].color = '#9A4F53';
+              graph[item[key]][0].color = "#9A4F53";
             }
           });
           return dequeued;
@@ -560,24 +560,24 @@ class GraphMap extends Component {
         }
       }
     }
-    return 'That target does not exisit.';
+    return "That target does not exisit.";
   };
 
-  /* 
+  /*
     Gets directions unknown to node in graph
   */
   getUnknownDirections = () => {
     let unknownDirections = [];
     let directions = this.state.graph[this.state.room_id][1];
     for (let direction in directions) {
-      if (directions[direction] === '?') {
+      if (directions[direction] === "?") {
         unknownDirections.push(direction);
       }
     }
     return unknownDirections;
   };
 
-  /* 
+  /*
   This takes the graph data and puts the necessary info into an array to be used by the map component.
   */
   mapCoords = () => {
@@ -587,14 +587,14 @@ class GraphMap extends Component {
       let data = graph[room][0];
       // eslint-disable-next-line
       if (room != room_id) {
-        data.color = '#525959';
+        data.color = "#525959";
       }
       setCoords.push(data);
     }
     this.setState({ allCoords: setCoords });
   };
 
-  /* 
+  /*
   This takes the graph data and puts the necessary info into an array to be used by the map component for the edges.
   */
   mapLinks = () => {
@@ -608,27 +608,29 @@ class GraphMap extends Component {
     this.setState({ allLinks: setLinks });
   };
 
-  /* 
+  /*
   Gets the correct format for coords from the graph data.
   */
   parseCoords = coords => {
     const coordsObject = {};
-    const coordsArr = coords.replace(/[{()}]/g, '').split(',');
+    const coordsArr = coords.replace(/[{()}]/g, "").split(",");
 
     coordsArr.forEach(coord => {
-      coordsObject['x'] = parseInt(coordsArr[0]);
-      coordsObject['y'] = parseInt(coordsArr[1]);
+      coordsObject["x"] = parseInt(coordsArr[0]);
+      coordsObject["y"] = parseInt(coordsArr[1]);
     });
 
     return coordsObject;
   };
 
-  /* 
+  /*
   This handles updating the graph at any point when it changes including color things.
   */
   updateGraph = (id, coords, exits, previous_room_id = null, move = null) => {
     const { inverse } = this.state;
 
+    // Why am I making a copy here... I'm not updating it
+    // then making another copy
     let graph = Object.assign({}, this.state.graph);
     // Make node if none
     if (!this.state.graph[id]) {
@@ -636,7 +638,7 @@ class GraphMap extends Component {
       payload.push(coords);
       const moves = {};
       exits.forEach(exit => {
-        moves[exit] = '?';
+        moves[exit] = "?";
       });
       payload.push(moves);
       graph = { ...graph, [id]: payload };
@@ -646,23 +648,23 @@ class GraphMap extends Component {
       previous_room_id !== null &&
       move &&
       previous_room_id !== id &&
-      graph[previous_room_id][1][move] === '?'
+      graph[previous_room_id][1][move] === "?"
     ) {
       graph[previous_room_id][1][move] = id;
       graph[id][1][inverse[move]] = previous_room_id;
     }
     if (previous_room_id !== null) {
-      graph[previous_room_id][0].color = '#525959';
-      graph[id][0].color = '#7dcdbe';
+      graph[previous_room_id][0].color = "#525959";
+      graph[id][0].color = "#7dcdbe";
     } else {
-      graph[0][0].color = '#525959';
-      graph[id][0].color = '#7dcdbe';
+      graph[0][0].color = "#525959";
+      graph[id][0].color = "#7dcdbe";
     }
 
-    localStorage.setItem('graph', JSON.stringify(graph));
+    localStorage.setItem("graph", JSON.stringify(graph));
     return graph;
   };
-  /* 
+  /*
   A method that kept track of how many graph nodes were fully explored.
   */
   updateVisited = () => {
@@ -672,7 +674,7 @@ class GraphMap extends Component {
       if (!visited.has(key)) {
         let qms = [];
         for (let direction in key) {
-          if (key[direction] === '?') {
+          if (key[direction] === "?") {
             qms.push(direction);
           }
         }
@@ -685,7 +687,7 @@ class GraphMap extends Component {
     this.setState({ visited, progress });
   };
 
-  /* 
+  /*
   A life saver! This wraps setTimeout in a promise turning it into and async function
   */
   wait = async ms => {
@@ -727,16 +729,16 @@ class GraphMap extends Component {
   //   }
   // };
 
-  /* 
+  /*
   Finds the shortest path to a node clicked on and travels there.
   */
   travelToNode = async node => {
     const path = this.findShortestPath(this.state.room_id, node);
     console.log(path);
-    if (typeof path === 'string') {
+    if (typeof path === "string") {
       console.log(path);
     } else {
-      console.log('path');
+      console.log("path");
       for (let direction of path) {
         for (let d in direction) {
           await this.flyToRooms(d, direction[d]);
@@ -745,7 +747,7 @@ class GraphMap extends Component {
     }
   };
 
-  /* 
+  /*
   The logic for handling the init and stopping of the Explore function.
   */
   handleClick = () => {
@@ -756,7 +758,7 @@ class GraphMap extends Component {
     if (isExploring) {
       this.setState({
         isExploring: false,
-        messages: ['Stopped auto exploring.']
+        messages: ["Stopped auto exploring."]
       });
     } else {
       this.setState({ isExploring: true }, () =>
@@ -856,9 +858,9 @@ const StyledGraphMap = styled.div`
   height: calc(100vh - 120px);
   align-items: center;
   animation: ${fadeIn} 1s ease-in-out;
-  ${'' /* justify-content: center; */}
+  ${"" /* justify-content: center; */}
   flex-wrap: wrap;
-  ${'' /* flex-direction: column; */}
+  ${"" /* flex-direction: column; */}
 
   .log-container {
     width: 289px;

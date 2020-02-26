@@ -5,6 +5,7 @@ const initialState = {
   room: {
     clickedDescription: "",
     clickedTitle: "",
+    coords: { x: 50, y: 60 },
     description: "",
     exits: [],
     items: [],
